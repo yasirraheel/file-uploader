@@ -19,5 +19,13 @@
 <script src="{{ asset('assets/vendor/libs/toastr/toastr.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/libs/ckeditor/ckeditor.js') }}""></script>
 <script src="{{ asset('assets/vendor/admin/js/application.js') }}"></script>
+<script src="{{ asset('assets/vendor/libs/clipboard/clipboard.min.js') }}"></script>
+<script>
+    var clipboard = new ClipboardJS('.copy');
+    clipboard.on('success', function(e) {
+        toastr.success("{{ __('Copied to clipboard') }}");
+        e.clearSelection();
+    });
+</script>
 @toastr_render
 @stack('scripts')

@@ -33,15 +33,14 @@ class LocalController extends Controller
     public static function getFile($fileEntry)
     {
         try {
-            $cachePrefex = 'secure_' . hashid($fileEntry->id);
-            if (Cache::has($cachePrefex)) {
-                return Cache::get($cachePrefex);
+            $disk = Storage::disk('public');
+            $path = $disk->path($fileEntry->path);
+            if (file_exists($path)) {
+                return response()->file($path, [
+                    'Content-Type' => $fileEntry->mime
+                ]);
             } else {
-                $file = Storage::disk('public')->get($fileEntry->path);
-                $response = \Response::make($file, 200);
-                $response->header("Content-Type", $fileEntry->mime);
-                Cache::put($cachePrefex, $response);
-                return $response;
+                return brokenFile();
             }
         } catch (Exception $e) {
             return brokenFile();

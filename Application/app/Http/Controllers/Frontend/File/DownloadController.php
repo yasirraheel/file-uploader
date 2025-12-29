@@ -155,6 +155,9 @@ class DownloadController extends Controller
 
     public static function accessCheck($fileEntry)
     {
+        if (auth()->guard('admin')->check()) {
+            return true;
+        }
         if ($fileEntry->access_status) {
             return true;
         } else {

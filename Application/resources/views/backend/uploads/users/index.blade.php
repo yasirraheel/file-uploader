@@ -133,6 +133,11 @@
                                                     </li>
                                                 @endif
                                                 <li>
+                                                    <a class="dropdown-item copy" href="#"
+                                                        data-clipboard-text="{{ route('secure.file', hashid($fileEntry->id)) }}"><i
+                                                            class="far fa-copy me-2"></i>{{ __('Copy Direct Link') }}</a>
+                                                </li>
+                                                <li>
                                                     <a class="dropdown-item"
                                                         href="{{ route('admin.uploads.users.download', $fileEntry->shared_id) }}"><i
                                                             class="fas fa-download me-2"></i>{{ __('Download') }}</a>

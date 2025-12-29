@@ -10,7 +10,7 @@ class SecureController extends Controller
 {
     public function index($id)
     {
-        $fileEntry = FileEntry::where('id', unhashid($id))->notExpired()->hasPreview()->with('storageProvider')->firstOrFail();
+        $fileEntry = FileEntry::where('id', unhashid($id))->notExpired()->with('storageProvider')->firstOrFail();
         abort_if(!DownloadController::accessCheck($fileEntry), 404);
         $handler = $fileEntry->storageProvider->handler;
         return $handler::getFile($fileEntry);
