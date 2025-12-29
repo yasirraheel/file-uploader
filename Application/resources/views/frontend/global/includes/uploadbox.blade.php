@@ -215,24 +215,45 @@
                             pauseBtn.on('click', function(e) {
                                 e.preventDefault();
                                 if (file.status === Dropzone.UPLOADING) {
-                                    // Do not set to CANCELED, just stop processing
-                                    myDropzone.cancelUpload(file);
-                                    // Mark as paused for our own logic if needed,
-                                    // but keep Dropzone state in a way that allows resume without restart
+                                    // Use Dropzone's internal API to remove the file from the uploading list
+                                    // but KEEP it in the files list so it's not "canceled" in the UI sense of removal
+
+                                    // 1. Remove from uploading files list to stop processing
+                                    var uploadingFiles = myDropzone.getUploadingFiles();
+                                    var index = uploadingFiles.indexOf(file);
+                                    if (index > -1) {
+                                        uploadingFiles.splice(index, 1);
+                                    }
+
+                                    // 2. Abort the current XHR if it exists (stops current chunk)
+                                    if (file.xhr) {
+                                        file.xhr.abort();
+                                    }
+
+                                    // 3. Set status to a custom "PAUSED" state (Dropzone doesn't have one, so we use a string)
+                                    // Note: We avoid Dropzone.CANCELED because that triggers error events and removal logic
+                                    file.status = "paused";
+
+                                    // 4. UI updates
                                     pauseBtn.addClass('d-none');
                                     resumeBtn.removeClass('d-none');
+
+                                    // 5. If using queue processing, we might need to process the next file
+                                    // if parallelUploads > 1, but usually for single file pause we just stop this one.
                                 }
                             });
 
                             resumeBtn.on('click', function(e) {
                                 e.preventDefault();
-                                // When resuming, we want to ensure it continues from where it left off.
-                                // If chunking is enabled, Dropzone handles retry of chunks.
-                                // We re-queue the file.
-                                file.status = Dropzone.QUEUED;
-                                myDropzone.processQueue();
-                                resumeBtn.addClass('d-none');
-                                pauseBtn.removeClass('d-none');
+                                if (file.status === "paused") {
+                                    // Reset status to QUEUED so Dropzone picks it up
+                                    file.status = Dropzone.QUEUED;
+                                    // Re-add to queue if needed, or just process
+                                    myDropzone.processQueue();
+
+                                    resumeBtn.addClass('d-none');
+                                    pauseBtn.removeClass('d-none');
+                                }
                             });
                         });
 
