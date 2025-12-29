@@ -167,7 +167,26 @@
                             fileEditBtnIcon = preview.find(".dz-edit .fa"),
                             fileEditCLose = preview.find(".dz-file-edit-close"),
                             fileEditSubmit = preview.find(".dz-file-edit-submit"),
-                            editPasswordInput = preview.find('.file-password');
+                            editPasswordInput = preview.find('.file-password'),
+                            pauseBtn = preview.find("[data-dz-pause]"),
+                            resumeBtn = preview.find("[data-dz-resume]");
+
+                        pauseBtn.on('click', function(e) {
+                            e.preventDefault();
+                            file.status = Dropzone.CANCELED;
+                            dropzone.cancelUpload(file);
+                            pauseBtn.addClass('d-none');
+                            resumeBtn.removeClass('d-none');
+                        });
+
+                        resumeBtn.on('click', function(e) {
+                            e.preventDefault();
+                            file.status = Dropzone.QUEUED;
+                            dropzone.processQueue();
+                            resumeBtn.addClass('d-none');
+                            pauseBtn.removeClass('d-none');
+                        });
+
                         editPasswordInput.on('input', function() {
                             editPasswordInput.removeClass('is-invalid');
                         });
@@ -264,10 +283,15 @@
         }
 
         function onFileError(file, message = null) {
-            toastr.error(message);
+            if (file.status !== Dropzone.CANCELED) {
+                toastr.error(message);
+            }
         }
 
         function onUploadComplete(file) {
+            let preview = $(file.previewElement);
+            preview.find("[data-dz-pause]").remove();
+            preview.find("[data-dz-resume]").remove();
             if (file.status == "success") {
                 let preview = $(file.previewElement),
                     response = JSON.parse(file.xhr.response);

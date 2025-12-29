@@ -53,6 +53,12 @@
                                                 @endif
                                             </div>
                                             <div class="col-auto">
+                                                <a class="dz-pause me-1" href="#" data-dz-pause>
+                                                    <i class="fas fa-pause"></i>
+                                                </a>
+                                                <a class="dz-resume me-1 d-none" href="#" data-dz-resume>
+                                                    <i class="fas fa-play"></i>
+                                                </a>
                                                 <a class="dz-remove" data-dz-remove>
                                                     <i class="fas fa-times"></i>
                                                 </a>
@@ -193,4 +199,55 @@
 @endpush
 @push('scripts_libs')
     <script src="{{ asset('assets/vendor/libs/dropzone/dropzone.min.js') }}"></script>
+    <script>
+        $(function() {
+             var checkDropzone = setInterval(function() {
+                 if (typeof Dropzone !== 'undefined' && Dropzone.instances.length > 0) {
+                     var myDropzone = Dropzone.instances[0]; // Assuming the first instance is the one we want
+                     if(myDropzone) {
+                        clearInterval(checkDropzone);
+
+                        myDropzone.on("addedfile", function(file) {
+                            let preview = $(file.previewElement);
+                            let pauseBtn = preview.find("[data-dz-pause]");
+                            let resumeBtn = preview.find("[data-dz-resume]");
+
+                            pauseBtn.on('click', function(e) {
+                                e.preventDefault();
+                                if (file.status === Dropzone.UPLOADING) {
+                                    file.status = Dropzone.CANCELED;
+                                    myDropzone.cancelUpload(file);
+                                    pauseBtn.addClass('d-none');
+                                    resumeBtn.removeClass('d-none');
+                                }
+                            });
+
+                            resumeBtn.on('click', function(e) {
+                                e.preventDefault();
+                                file.status = Dropzone.QUEUED;
+                                myDropzone.processQueue();
+                                resumeBtn.addClass('d-none');
+                                pauseBtn.removeClass('d-none');
+                            });
+                        });
+
+                        myDropzone.on("complete", function(file) {
+                             let preview = $(file.previewElement);
+                             preview.find("[data-dz-pause]").remove();
+                             preview.find("[data-dz-resume]").remove();
+                        });
+
+                        // Patch toastr.error to suppress upload canceled messages
+                        var originalToastrError = toastr.error;
+                        toastr.error = function(message, title, options) {
+                            if (message === "Upload canceled." || message === "Upload canceled") {
+                                return;
+                            }
+                            originalToastrError.apply(toastr, arguments);
+                        };
+                     }
+                 }
+             }, 500);
+        });
+    </script>
 @endpush
