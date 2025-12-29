@@ -215,8 +215,10 @@
                             pauseBtn.on('click', function(e) {
                                 e.preventDefault();
                                 if (file.status === Dropzone.UPLOADING) {
-                                    file.status = Dropzone.CANCELED;
+                                    // Do not set to CANCELED, just stop processing
                                     myDropzone.cancelUpload(file);
+                                    // Mark as paused for our own logic if needed,
+                                    // but keep Dropzone state in a way that allows resume without restart
                                     pauseBtn.addClass('d-none');
                                     resumeBtn.removeClass('d-none');
                                 }
@@ -224,6 +226,9 @@
 
                             resumeBtn.on('click', function(e) {
                                 e.preventDefault();
+                                // When resuming, we want to ensure it continues from where it left off.
+                                // If chunking is enabled, Dropzone handles retry of chunks.
+                                // We re-queue the file.
                                 file.status = Dropzone.QUEUED;
                                 myDropzone.processQueue();
                                 resumeBtn.addClass('d-none');
