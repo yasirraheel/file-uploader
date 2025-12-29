@@ -8,7 +8,7 @@ use App\Models\FileEntry;
 
 class SecureController extends Controller
 {
-    public function index($id)
+    public function index($id, $filename = null)
     {
         $fileEntry = FileEntry::where('id', unhashid($id))->notExpired()->with('storageProvider')->firstOrFail();
         abort_if(!DownloadController::accessCheck($fileEntry), 404);

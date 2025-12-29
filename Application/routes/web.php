@@ -174,7 +174,7 @@ Route::group(['middleware' => 'notInstalled', 'prefix' => 'admin', 'namespace' =
 | Frontend Routs With Laravel Localization
 |--------------------------------------------------------------------------
  */
-Route::get('secure/file/{id}', 'Frontend\File\SecureController@index')->name('secure.file');
+Route::get('secure/file/{id}/{filename?}', 'Frontend\File\SecureController@index')->name('secure.file');
 Route::group(localizeOptions(), function () {
     Route::namespace ('Frontend\Gateways')->prefix('ipn')->name('ipn.')->group(function () {
         Route::get('paypal_express', 'PaypalExpressController@ipn')->name('paypal_express');

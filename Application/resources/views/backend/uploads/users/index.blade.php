@@ -134,7 +134,7 @@
                                                 @endif
                                                 <li>
                                                     <a class="dropdown-item copy" href="#"
-                                                        data-clipboard-text="{{ route('secure.file', hashid($fileEntry->id)) }}"><i
+                                                        data-clipboard-text="{{ route('secure.file', [hashid($fileEntry->id), $fileEntry->name]) }}"><i
                                                             class="far fa-copy me-2"></i>{{ __('Copy Direct Link') }}</a>
                                                 </li>
                                                 <li>
