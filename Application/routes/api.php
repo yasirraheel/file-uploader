@@ -18,4 +18,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/file/{shared_id}', 'Api\FileApiController@getFileDetails');
+Route::get('/files', 'Api\FileApiController@getAllFiles');

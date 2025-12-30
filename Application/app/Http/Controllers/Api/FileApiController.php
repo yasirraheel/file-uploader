@@ -14,30 +14,28 @@ class FileApiController extends Controller
      * @param string $shared_id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getFileDetails($shared_id)
+    public function getAllFiles()
     {
-        $fileEntry = FileEntry::where('shared_id', $shared_id)
-            ->notExpired()
-            ->first();
+        $files = FileEntry::notExpired()
+            ->select('id', 'name')
+            ->orderBy('created_at', 'desc')
+            ->paginate(50); // Pagination to prevent memory issues with large datasets
 
-        if (!$fileEntry) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'File not found or expired',
-            ], 404);
-        }
+        $data = $files->map(function ($file) {
+            return [
+                'name' => $file->name,
+                'direct_link' => route('secure.file', [hashid($file->id), $file->name]),
+            ];
+        });
 
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'name' => $fileEntry->name,
-                'filename' => $fileEntry->filename,
-                'mime_type' => $fileEntry->mime,
-                'size' => $fileEntry->size,
-                'extension' => $fileEntry->extension,
-                'direct_link' => route('secure.file', [hashid($fileEntry->id), $fileEntry->name]),
-                'download_link' => route('file.download', $fileEntry->shared_id),
-                'created_at' => $fileEntry->created_at,
+            'data' => $data,
+            'pagination' => [
+                'current_page' => $files->currentPage(),
+                'last_page' => $files->lastPage(),
+                'per_page' => $files->perPage(),
+                'total' => $files->total(),
             ]
         ]);
     }
