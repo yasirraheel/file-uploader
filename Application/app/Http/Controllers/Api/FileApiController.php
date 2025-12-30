@@ -14,12 +14,19 @@ class FileApiController extends Controller
      * @param string $shared_id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getAllFiles()
+    public function getAllFiles(Request $request)
     {
-        $files = FileEntry::notExpired()
-            ->select('id', 'name')
-            ->orderBy('created_at', 'desc')
-            ->paginate(50); // Pagination to prevent memory issues with large datasets
+        $search = $request->input('search');
+
+        $query = FileEntry::notExpired()
+            ->select('id', 'name', 'created_at'); // Added created_at for ordering
+
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        $files = $query->orderBy('created_at', 'desc')
+            ->paginate(50);
 
         $data = $files->map(function ($file) {
             return [
