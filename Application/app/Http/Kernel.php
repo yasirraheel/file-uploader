@@ -79,5 +79,6 @@ class Kernel extends HttpKernel
         'demo' => \App\Http\Middleware\DemoMode::class,
         'disable.blog' => \App\Http\Middleware\BlogDisable::class,
         'isSubscribed' => \App\Http\Middleware\SubscriptionMiddleware::class,
+        'api.key' => \App\Http\Middleware\ApiKeyMiddleware::class,
     ];
 }

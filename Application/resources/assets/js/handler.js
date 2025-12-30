@@ -294,7 +294,12 @@
             preview.find("[data-dz-resume]").remove();
             if (file.status == "success") {
                 let preview = $(file.previewElement),
+                    response;
+                try {
                     response = JSON.parse(file.xhr.response);
+                } catch (e) {
+                    response = { type: 'error', msg: 'Server Error: ' + file.xhr.statusText };
+                }
                 if (response.type == 'success') {
                     let previewContainer = preview.find('.dz-preview-container');
                     if (response.preview_link != null) {

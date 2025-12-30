@@ -245,6 +245,7 @@ Route::group(localizeOptions(), function () {
                     Route::get('/', 'SettingsController@index')->name('settings');
                     Route::post('details/update', 'SettingsController@detailsUpdate')->name('settings.details.update');
                     Route::post('details/mobile/update', 'SettingsController@mobileUpdate')->name('settings.details.mobile.update');
+                    Route::post('apikey/generate', 'SettingsController@generateApiKey')->name('settings.apikey.generate');
                     Route::get('password', 'SettingsController@password')->name('settings.password');
                     Route::post('password/update', 'SettingsController@passwordUpdate')->name('settings.password.update');
                     Route::get('2fa', 'SettingsController@towFactor')->name('settings.2fa');

@@ -18,4 +18,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/files', 'Api\FileApiController@getAllFiles');
+Route::middleware('api.key')->group(function () {
+    Route::get('/files', 'Api\FileApiController@getAllFiles');
+});

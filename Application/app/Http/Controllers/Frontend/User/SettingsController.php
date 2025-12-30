@@ -99,18 +99,8 @@ class SettingsController extends Controller
             toastr()->error(lang('Phone code not exsits', 'alerts'));
             return back();
         }
-        if ($findMobileCode->name != @$this->user()->address->country) {
-            toastr()->error(lang('Phone number must be in the same country where you located', 'alerts'));
-            return back();
-        }
-        $request->mobile = $findMobileCode->phone . $request->mobile;
-        if ($request->mobile == $this->user()->mobile) {
-            toastr()->error(lang('You must to change the phone number to make a change', 'alerts'));
-            return back();
-        }
         $validator = Validator::make($request->all(), [
-            'mobile_code' => ['required', 'numeric'],
-            'mobile' => ['required', 'numeric', 'unique:users,mobile,' . $this->user()->id],
+            'mobile' => ['required', 'numeric'],
         ]);
         if ($validator->fails()) {
             foreach ($validator->errors()->all() as $error) {
@@ -118,16 +108,25 @@ class SettingsController extends Controller
             }
             return back();
         }
-        $existMobile = User::where([['mobile', $request->mobile], ['id', '!=', $this->user()->id]])->first();
-        if ($existMobile) {
-            toastr()->error(lang('Phone number already exist', 'alerts'));
+        $mobile = $findMobileCode->phone . $request->mobile;
+        $user = User::find($this->user()->id);
+        $updateUser = $user->update([
+            'mobile' => $mobile,
+        ]);
+        if ($updateUser) {
+            toastr()->success(lang('Phone number has been updated successfully', 'alerts'));
             return back();
         }
-        $update = User::where('id', $this->user()->id)->update(['mobile' => $request->mobile]);
-        if ($update) {
-            toastr()->success(lang('Phone number has been changed successfully', 'alerts'));
-            return back();
-        }
+    }
+
+    public function generateApiKey(Request $request)
+    {
+        $user = User::find($this->user()->id);
+        $user->api_key = \Str::random(60);
+        $user->save();
+
+        toastr()->success(lang('API Key has been generated successfully', 'alerts'));
+        return back();
     }
 
     public function password()

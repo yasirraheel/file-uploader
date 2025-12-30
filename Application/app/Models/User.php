@@ -28,6 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'address',
         'avatar',
         'password',
+        'api_key',
         'google2fa_status',
         'google2fa_secret',
         'status',
@@ -43,6 +44,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'remember_token',
         'google2fa_secret',
+        'api_key',
     ];
 
     /**

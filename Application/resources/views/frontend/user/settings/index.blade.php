@@ -114,7 +114,22 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="mb-4">
+                                    <label class="form-label">{{ lang('API Key', 'forms') }} : </label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control form-control-lg"
+                                            value="{{ $user->api_key ?? lang('No API Key generated', 'user') }}" readonly>
+                                        <button class="btn btn-dark btn-md" type="button" onclick="document.getElementById('generateApiKeyForm').submit();">
+                                            <i class="fas fa-key"></i>
+                                            <span class="ms-2 d-none d-lg-inline">{{ $user->api_key ? lang('Regenerate', 'user') : lang('Generate', 'user') }}</span>
+                                        </button>
+                                    </div>
+                                    <small class="text-muted">{{ lang('Keep your API key secret. It allows access to your account via API.', 'user') }}</small>
+                                </div>
                                 <button class="btn btn-primary">{{ lang('Save Changes', 'user') }}</button>
+                            </form>
+                            <form id="generateApiKeyForm" action="{{ route('user.settings.apikey.generate') }}" method="POST" class="d-none">
+                                @csrf
                             </form>
                         </div>
                     </div>
