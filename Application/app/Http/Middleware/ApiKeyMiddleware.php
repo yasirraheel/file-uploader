@@ -17,28 +17,30 @@ class ApiKeyMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $apiKey = $request->header('X-API-KEY') ?? $request->query('api_key');
+        // Check for key in Header, Query Param, OR Request Body (Input)
+        $apiKey = $request->header('X-API-KEY') ?? $request->input('api_key');
 
         if (!$apiKey) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'API Key is missing',
+                'message' => 'API Key is missing. Sent: ' . json_encode($request->all()), // Temporary Debug
             ], 401);
         }
 
-        // Debugging: Check if we can find the admin directly without any other scopes
-        // Using plain query to avoid global scopes issues if any
+        // TRIM whitespace just in case
+        $apiKey = trim($apiKey);
+
         $admin = \DB::table('admins')->where('api_key', $apiKey)->first();
 
         if (!$admin) {
+            // Check if ANY admin has a key set (Debugging purpose)
+            $count = \DB::table('admins')->whereNotNull('api_key')->count();
+
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid API Key',
+                'message' => 'Invalid API Key. (Admin Key Count: ' . $count . ')',
             ], 401);
         }
-
-        // Optionally attach admin to request if needed
-        // $request->merge(['admin' => $admin]);
 
         return $next($request);
     }
