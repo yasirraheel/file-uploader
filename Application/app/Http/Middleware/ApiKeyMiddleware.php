@@ -26,7 +26,9 @@ class ApiKeyMiddleware
             ], 401);
         }
 
-        $admin = Admin::where('api_key', $apiKey)->first();
+        // Debugging: Check if we can find the admin directly without any other scopes
+        // Using plain query to avoid global scopes issues if any
+        $admin = \DB::table('admins')->where('api_key', $apiKey)->first();
 
         if (!$admin) {
             return response()->json([
