@@ -86,6 +86,16 @@ class SettingsController extends Controller
 
     }
 
+    public function generateApiKey(Request $request)
+    {
+        $admin = Admin::find($this->admin()->id);
+        $admin->api_key = \Str::random(60);
+        $admin->save();
+
+        toastr()->success(__('API Key has been generated successfully'));
+        return back();
+    }
+
     protected function admin()
     {
         $admin = Admin::find(adminAuthInfo()->id);

@@ -165,6 +165,7 @@ Route::group(['middleware' => 'notInstalled', 'prefix' => 'admin', 'namespace' =
             Route::get('security', 'SettingsController@securityForm')->name('account.security');
             Route::post('details/update', 'SettingsController@detailsUpdate')->name('account.details.update');
             Route::post('security/update', 'SettingsController@securityUpdate')->name('account.security.update');
+            Route::post('apikey/generate', 'SettingsController@generateApiKey')->name('account.apikey.generate');
         });
     });
 });
@@ -245,7 +246,6 @@ Route::group(localizeOptions(), function () {
                     Route::get('/', 'SettingsController@index')->name('settings');
                     Route::post('details/update', 'SettingsController@detailsUpdate')->name('settings.details.update');
                     Route::post('details/mobile/update', 'SettingsController@mobileUpdate')->name('settings.details.mobile.update');
-                    Route::post('apikey/generate', 'SettingsController@generateApiKey')->name('settings.apikey.generate');
                     Route::get('password', 'SettingsController@password')->name('settings.password');
                     Route::post('password/update', 'SettingsController@passwordUpdate')->name('settings.password.update');
                     Route::get('2fa', 'SettingsController@towFactor')->name('settings.2fa');

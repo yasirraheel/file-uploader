@@ -119,16 +119,6 @@ class SettingsController extends Controller
         }
     }
 
-    public function generateApiKey(Request $request)
-    {
-        $user = User::find($this->user()->id);
-        $user->api_key = \Str::random(60);
-        $user->save();
-
-        toastr()->success(lang('API Key has been generated successfully', 'alerts'));
-        return back();
-    }
-
     public function password()
     {
         return view('frontend.user.settings.password', ['user' => $this->user()]);

@@ -38,7 +38,22 @@
                             class="red">*</span></label>
                     <input type="email" class="form-control" name="email" value="{{ adminAuthInfo()->email }}" required>
                 </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ __('API Key') }} : </label>
+                    <div class="input-group">
+                        <input type="text" class="form-control"
+                            value="{{ adminAuthInfo()->api_key ?? __('No API Key generated') }}" readonly>
+                        <button class="btn btn-dark" type="button" onclick="document.getElementById('generateApiKeyForm').submit();">
+                            <i class="fas fa-key"></i>
+                            <span class="ms-2">{{ adminAuthInfo()->api_key ? __('Regenerate') : __('Generate') }}</span>
+                        </button>
+                    </div>
+                    <small class="text-muted">{{ __('Keep your API key secret. It allows access to your account via API.') }}</small>
+                </div>
             </div>
         </div>
+    </form>
+    <form id="generateApiKeyForm" action="{{ route('admin.account.apikey.generate') }}" method="POST" class="d-none">
+        @csrf
     </form>
 @endsection
