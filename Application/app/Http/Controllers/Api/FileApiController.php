@@ -17,6 +17,7 @@ class FileApiController extends Controller
     public function getAllFiles(Request $request)
     {
         $search = $request->input('search');
+        $limit = $request->input('limit');
 
         $query = FileEntry::notExpired()
             ->select('id', 'name', 'created_at'); // Added created_at for ordering
@@ -25,8 +26,28 @@ class FileApiController extends Controller
             $query->where('name', 'like', '%' . $search . '%');
         }
 
-        $files = $query->orderBy('created_at', 'desc')
-            ->paginate(50);
+        $query->orderBy('created_at', 'desc');
+
+        if ($limit === 'all') {
+            $files = $query->get();
+            $pagination = [
+                'current_page' => 1,
+                'last_page' => 1,
+                'per_page' => $files->count(),
+                'total' => $files->count(),
+            ];
+        } else {
+            // Default to 50 if not provided or invalid
+            $perPage = is_numeric($limit) && $limit > 0 ? (int) $limit : 50;
+            $files = $query->paginate($perPage);
+
+            $pagination = [
+                'current_page' => $files->currentPage(),
+                'last_page' => $files->lastPage(),
+                'per_page' => $files->perPage(),
+                'total' => $files->total(),
+            ];
+        }
 
         $data = $files->map(function ($file) {
             return [
@@ -38,12 +59,7 @@ class FileApiController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $data,
-            'pagination' => [
-                'current_page' => $files->currentPage(),
-                'last_page' => $files->lastPage(),
-                'per_page' => $files->perPage(),
-                'total' => $files->total(),
-            ]
+            'pagination' => $pagination
         ]);
     }
 }
