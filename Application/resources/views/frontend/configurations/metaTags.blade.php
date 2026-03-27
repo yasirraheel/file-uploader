@@ -5,15 +5,21 @@
 <meta name="csrf-token" content="{{ csrf_token() }}" />
 <meta name="theme-color" content="{{ $settings['website_primary_color'] }}">
 @php
+$seoConfiguration = $SeoConfiguration ?? null;
+$seoLanguage = $seoConfiguration?->language;
+$fallbackLanguage = getLang();
+$langCode = $seoLanguage->code ?? $fallbackLanguage;
 $title = $__env->yieldContent('title') ? $settings['website_name'] . ' - ' . $__env->yieldContent('title') : $settings['website_name'];
-$description = $__env->yieldContent('description') ? $__env->yieldContent('description') : $SeoConfiguration->description ?? '';
-$robots = $SeoConfiguration ? $SeoConfiguration->robots_index . ', ' . $SeoConfiguration->robots_follow_links : 'index, follow';
-$localeAlternate = $SeoConfiguration ? $SeoConfiguration->language->code . '_' . strtoupper($SeoConfiguration->language->code) : getLang() . '_' . strtoupper(getLang());
+$description = $__env->yieldContent('description') ? $__env->yieldContent('description') : ($seoConfiguration->description ?? '');
+$robots = ($seoConfiguration && $seoConfiguration->robots_index && $seoConfiguration->robots_follow_links)
+    ? $seoConfiguration->robots_index . ', ' . $seoConfiguration->robots_follow_links
+    : 'index, follow';
+$localeAlternate = $langCode . '_' . strtoupper($langCode);
 $ogImage = $__env->yieldContent('og_image') ? $__env->yieldContent('og_image') : asset($settings['website_social_image']);
 @endphp
 <meta name="title" content="{{ $title }}">
 <meta name="description" content="{{ $description }}">
-<meta name="keywords" content="{{ $SeoConfiguration->keywords ?? '' }}">
+<meta name="keywords" content="{{ $seoConfiguration->keywords ?? '' }}">
 <link rel="alternate" hreflang="x-default" href="{{ url('/') }}" />
 @if(settings('website_language_type'))
 @foreach ($languages as $language)
@@ -21,12 +27,12 @@ $ogImage = $__env->yieldContent('og_image') ? $__env->yieldContent('og_image') :
 @endforeach
 @endif
 <meta name="robots" content="{{ $robots }}">
-<meta name="language" content="{{ $SeoConfiguration->language->name ?? getLang() }}">
+<meta name="language" content="{{ $seoLanguage->name ?? $fallbackLanguage }}">
 <meta name="author" content="{{ $settings['website_name'] }}">
 <meta property="og:url" content="{{ url()->current() }}">
 <meta property="og:image" content="{{ $ogImage }}">
 <meta property="og:site_name" content="{{ $settings['website_name'] }}">
-<meta property="og:locale" content="{{ $SeoConfiguration->language->code ?? getLang() }}">
+<meta property="og:locale" content="{{ $langCode }}">
 <meta property="og:locale:alternate" content="{{ $localeAlternate }}">
 <meta property="og:type" content="website">
 <meta property="og:title" content="{{ $title }}">

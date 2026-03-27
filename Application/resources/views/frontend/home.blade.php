@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    @section('title', $SeoConfiguration->title ?? '')
+    @section('title', ($SeoConfiguration ?? null)->title ?? '')
     @include('frontend.includes.head')
     @push('styles_libs')
         <link rel="stylesheet" href="{{ asset('assets/vendor/libs/aos/aos.min.css') }}">
